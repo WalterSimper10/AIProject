@@ -1,0 +1,4 @@
+image_filename,label,x_min,y_min,x_max,y_max
+image1.jpg,cat,50,50,100,100
+image1.jpg,dog,150,100,200,150
+image2.png,car,100,80,200,150

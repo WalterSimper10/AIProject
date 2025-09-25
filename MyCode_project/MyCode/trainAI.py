@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import layers, models # type: ignore
 
 # Load training and test sets
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -29,7 +29,7 @@ df.columns = ["filename", "width", "height", "class", "xmin", "ymin", "xmax", "y
 row = df.iloc[0]
 
 # Load the image
-img = Image.open(r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AIBackend\MyCode_project\MyCode\trainAI.py" + row["filename"])
+img = Image.open(r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AIBackend\mushroom-dataset-1\train\1_GKdmeIOR6NGxYAju9TIzKA_jpeg.rf.5deb179bd4973193efc0b7e11768e7af.jpg" + row["filename"])
 
 # Plot
 fig, ax = plt.subplots(1)
