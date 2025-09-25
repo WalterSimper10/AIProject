@@ -1,0 +1,10 @@
+dev-requirements.txt
+pyproject.toml
+MyCode/__init__.py
+MyCode/trainAI.py
+MyCode.egg-info/PKG-INFO
+MyCode.egg-info/SOURCES.txt
+MyCode.egg-info/dependency_links.txt
+MyCode.egg-info/requires.txt
+MyCode.egg-info/top_level.txt
+tests/test_MyCode.py
