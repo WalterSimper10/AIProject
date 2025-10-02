@@ -1,23 +1,25 @@
 import tensorflow as tf
+from tensorflow.keras import layers
 import os
 import cv2
 
-#I need to use one of these to replace imghdr, but I don't know which one to use yet
+#Loading, parsing and getting rid of bad data
 import filetype
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
 
-data_dir = 'data' #directory to dataset
-image_exts = ['jpeg','jpg','bmp', 'png'] #literally just a list
-#^set up to loop into it
+    #Load data
 
-#Pass through directory for 'data' folder and concatenate train + image to complete path
-os.listdir(os.path.join(data_dir,'train', 'images')) 
+#Load data from directory 'wild card search', data set API
+#Build data pipeline
+data = tf.keras.utils.image_dataset_from_directory('data', image_size=(640,640))
+#Access data pipeline
+data_iterator = data.as_numpy_iterator()
+#Getting the batch of data
+batch = data_iterator.next()
+#^Images represented as numpy array
 
-
-#Checking for every folder in 'data' directory
-for image_class in os.listdir(data_dir): 
-    for image in os.listdir(os.path.join(data_dir, image_class)):
-        print(image)
-        
 
 #limit tensorflow from using all the GPU memory
 gpus = tf.config.experimental.list_physical_devices('GPU')
