@@ -1,6 +1,7 @@
 import os
 import cv2
 import filetype
+import tensorflow as tf
 
 data_dir = 'data' #directory to dataset
 image_exts = ['jpeg','jpg','bmp', 'png'] #literally just a list
