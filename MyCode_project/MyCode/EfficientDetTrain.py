@@ -5,23 +5,28 @@ import keras_cv
 
 
 
-def load_annotations(csv_path, img_dir):
+def load_annotations(csv_path, img_dir, class_names=None):
     df = pd.read_csv(csv_path)
 
-    # Convert class column to categorical
-    df["class"] = df["class"].astype("category")
+    # Drop invalid rows
+    df = df[df["class"].notna()]
+    df = df[~df["class"].isin(["-------", "--------------------"])]
 
-    # Get mapping
-    class_names = list(df["class"].cat.categories)
-    print("Detected classes:", class_names)
-    print("Number of classes:", len(class_names))
+    if class_names is None:
+        df["class"] = df["class"].astype("category")
+        class_names = list(df["class"].cat.categories)
+    else:
+        df["class"] = pd.Categorical(df["class"], categories=class_names)
+
+    labels = df["class"].cat.codes
 
     grouped = df.groupby("filename")
     records = []
     for filename, group in grouped:
         boxes = group[["xmin", "ymin", "xmax", "ymax"]].values.astype("float32")
-        labels = group["class"].cat.codes.values.astype("int32")  # integer IDs
+        labels = group["class"].cat.codes.values.astype("int32")
         records.append((os.path.join(img_dir, filename), boxes, labels))
+        print("Max label value:", labels.max())
 
     return records, class_names
 # -----------------------------
@@ -37,42 +42,33 @@ def parse_example(img_path, boxes, labels, target_size=(512, 512)):
     h, w = target_size
     boxes = boxes / [w, h, w, h]
 
-    return img, {"boxes": boxes, "classes": labels}
+    return img, {"boxes": boxes, "classes": labels}  # Return image tensor directly
+
+
+def wrap_input(images, labels):
+    return {"images": images}, labels
+
 
 
 def make_dataset(records, batch_size=4, shuffle=True):
-    def gen():
-        for path, boxes, labels in records:
-            yield path, boxes, labels
+    # Separate your lists
+    img_paths = [r[0] for r in records]
+    boxes_list = [r[1] for r in records]
+    labels_list = [r[2] for r in records]
 
-    ds = tf.data.Dataset.from_generator(
-        gen,
-        output_signature=(
-            tf.TensorSpec(shape=(), dtype=tf.string),
-            tf.TensorSpec(shape=(None, 4), dtype=tf.float32),
-            tf.TensorSpec(shape=(None,), dtype=tf.int32),
-        )
-    )
-
+    ds = tf.data.Dataset.from_tensor_slices((img_paths, boxes_list, labels_list))
     if shuffle:
-        ds = ds.shuffle(buffer_size=len(records))
+        ds = ds.shuffle(len(records))
 
-    ds = ds.map(parse_example, num_parallel_calls=tf.data.AUTOTUNE)
+    def _parse(img_path, boxes, labels):
+        return parse_example(img_path, boxes, labels)
 
-    ds = ds.padded_batch(
-        batch_size,
-        padded_shapes=(
-            {"images": [512, 512, 3]},
-            {"boxes": [None, 4], "classes": [None]}
-        ),
-        padding_values=(
-            {"images": tf.constant(0.0, dtype=tf.float32)},
-            {"boxes": tf.constant(-1.0, dtype=tf.float32),
-             "classes": tf.constant(-1, dtype=tf.int32)}
-        )
-    )
+    ds = ds.map(_parse, num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.batch(batch_size)
+    ds = ds.map(wrap_input, num_parallel_calls=tf.data.AUTOTUNE)  # Wrap input here
 
-    return ds.prefetch(tf.data.AUTOTUNE)
+    ds = ds.prefetch(tf.data.AUTOTUNE)
+    return ds
 
 
 
@@ -91,14 +87,20 @@ num_classes = len(class_names)
 print("Training with", num_classes, "classes")
 
 train_ds = make_dataset(train_records, batch_size=4)
-val_ds   = make_dataset(val_records, batch_size=4, shuffle=False)
+val_ds = make_dataset(val_records, batch_size=4, shuffle=False)
+
+for batch in train_ds.take(1):
+    boxes = batch[1]["boxes"]
+    classes = batch[1]["classes"]
+    print("Boxes:", boxes)
+    print("Classes:", classes)
+    print("Unique labels:", tf.unique(tf.concat(classes.flat_values, axis=0))[0])
 
 for x, y in train_ds.take(1):
-    print(x.keys())          # should show dict_keys(['images'])
-    print(x["images"].shape) # (batch, 512, 512, 3)
-    print(y["boxes"].shape)  # (batch, N, 4)
-    print(y["classes"].shape)# (batch, N)
-
+    print("x keys:", x.keys())  # ✅ Should be dict_keys(['images'])
+    print("x['images'].shape:", x["images"].shape)
+    print("y['boxes'].shape:", y["boxes"].shape)
+    print("y['classes'].shape:", y["classes"].shape)
 
 model = keras_cv.models.RetinaNet.from_preset(
     "resnet50_imagenet",
@@ -123,7 +125,7 @@ model.compile(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=10   # adjust as needed
+    epochs=5   # adjust as needed
 )
 
 # -----------------------------
