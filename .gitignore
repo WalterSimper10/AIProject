@@ -1,0 +1,17 @@
+#Ignore cats and dogs dataset
+kagglecatsanddogs_5340/
+
+#Ignore zip files
+*.zip
+
+#Ignore trained models
+*.keras
+
+#Ignore environment
+.venv/
+
+#Ignore vscode
+.vscode/
+
+#Ignore mushroom dataset
+data/
