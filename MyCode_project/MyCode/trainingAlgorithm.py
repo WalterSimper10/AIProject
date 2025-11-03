@@ -4,14 +4,15 @@ import keras
 from keras import layers
 from tensorflow import data as tf_data
 import matplotlib.pyplot as plt
-
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras import layers, models
 
 
 
 #Filtering out corrupted files
 num_skipped = 0
-for folder_name in ("Cat", "Dog"):
-    folder_path = os.path.join("C:\\Users\\SkillsHub-Learner-09\\.vscode\\VSCODE Projects\\AIBackend\\kagglecatsanddogs_5340\\PetImages", folder_name)
+for folder_name in ("Agaricus", "Amanita", "Boletus", "Cortinarius", "Entoloma", "Hygrocybe", "Lactarius", "Russula", "Suillus"):
+    folder_path = os.path.join(r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\train", folder_name)
     for fname in os.listdir(folder_path):
         fpath = os.path.join(folder_path, fname)
         try:
@@ -38,7 +39,7 @@ batch_size = 128
 
 
 train_ds, val_ds = keras.utils.image_dataset_from_directory(
-    "C:\\Users\\SkillsHub-Learner-09\\.vscode\\VSCODE Projects\\AIBackend\\kagglecatsanddogs_5340\\PetImages",
+    r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\kagglecatsanddogs_5340\PetImages",
     validation_split=0.2,
     subset="both",
     seed=1337,
@@ -46,27 +47,11 @@ train_ds, val_ds = keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
 )
 
-
-#Visualize the dataset (use jupyter)
-plt.figure(figsize=(10, 10))
-for images, labels in train_ds.take(1):
-    for i in range(9):
-        ax = plt.subplot(3, 3, i + 1)
-        plt.imshow(np.array(images[i]).astype("uint8"))
-        plt.title(int(labels[i]))
-        plt.axis("off")
-
-
-
-
 #Data augmentation - working with smaller dataset, so add realistic shifts and changes to images
 data_augmentation_layers = [
     layers.RandomFlip("horizontal"),
     layers.RandomRotation(0.1),
 ]
-
-
-
 
 def data_augmentation(images):
     for layer in data_augmentation_layers:
@@ -186,12 +171,3 @@ model.fit(
     validation_data=val_ds,
 )
 
-img = keras.utils.load_img(r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AIBackend\kagglecatsanddogs_5340\PetImages\Cat\21.jpg", target_size=image_size)
-plt.imshow(img)
-
-img_array = keras.utils.img_to_array(img)
-img_array = keras.ops.expand_dims(img_array, 0)  # Create batch axis
-
-predictions = model.predict(img_array)
-score = float(keras.ops.sigmoid(predictions[0][0]))
-print(f"This image is {100 * (1 - score):.2f}% cat and {100 * score:.2f}% dog.")
