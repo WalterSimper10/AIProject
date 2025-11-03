@@ -1,17 +1,11 @@
 #Ignore cats and dogs dataset
 kagglecatsanddogs_5340/
 
-#Ignore zip files
-*.zip
+#Ignore files that arent code
+MyCode.egg-info/
 
-#Ignore trained models
-*.keras
+#Ignore AI model (train your own!!)
+save_at_1.keras
 
-#Ignore environment
-.venv/
-
-#Ignore vscode
-.vscode/
-
-#Ignore mushroom dataset
-data/
+#Ignore dataset
+Mushroom Classification.v1i.folder/
