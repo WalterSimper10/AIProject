@@ -39,7 +39,7 @@ batch_size = 128
 
 
 train_ds, val_ds = keras.utils.image_dataset_from_directory(
-    r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\kagglecatsanddogs_5340\PetImages",
+    r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\train",
     validation_split=0.2,
     subset="both",
     seed=1337,
