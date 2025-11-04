@@ -1,11 +1,12 @@
 import os
+import random
+import shutil
+
 import numpy as np
 import keras
 from keras import layers
 from tensorflow import data as tf_data
 import matplotlib.pyplot as plt
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras import layers, models
 
 
 
@@ -33,9 +34,56 @@ print(f"Deleted {num_skipped} images.")
 
 #Generating the dataset
 
+#Train on 85% of the data base and validate on the other 15%
+splitsize = .85
 
-image_size = (180, 180)
-batch_size = 128
+#Array of each of the classes (i.e. mushroom remus')
+categories = []
+
+source_folder = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder"
+
+folders = os.listdir(source_folder)
+
+for subfolder in folders:
+    if os.path.isdir(source_folder + "/" + subfolder):
+        categories.append(subfolder)
+
+categories.sort()
+
+#Create save location for the AI
+target_folder = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\dataset_for_model"
+existDataSetPath = os.path.exists(target_folder)
+if existDataSetPath == False:
+    os.mkdir(target_folder)
+
+
+#Create a function to split the data
+def split_data(SOURCE, TRAINING, VALIDATION, SPLIT_SIZE):
+    files=[]
+
+    for filename in os.listdir(SOURCE):
+        file = SOURCE + filename
+        print(file)
+        if os.path.getsize(file) > 0:
+            files.append(filename)
+        else:
+            print(filename + " is length 0, ignore...")  
+    print(len(files))  
+    trainingLength = int(len(files) * SPLIT_SIZE)
+    shuffleSet = random.sample(files, len(files))
+    trainingSet = shuffleSet[0:trainingLength]
+    validSet = shuffleSet[trainingLength:]
+    #Copy the train images
+
+    for filename in trainingSet:
+        thisFile = SOURCE + filename
+        destination = TRAINING
+#7:37
+
+
+#Test function to split single folder
+split_data(source_folder + "/" + "Amanita")
+
 
 
 train_ds, val_ds = keras.utils.image_dataset_from_directory(
