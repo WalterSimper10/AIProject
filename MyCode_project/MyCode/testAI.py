@@ -1,23 +1,50 @@
 import os
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
+from PIL import Image
 import numpy as np
-import keras
-from keras import layers
-from tensorflow import data as tf_data
-import matplotlib.pyplot as plt
+import tensorflow as tf
+import cv2
+
+#List of classes
+categories = os.listdir("C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/dataset_for_model/train")
+categories.sort()
+
+#Load the model
+path_for_saved_model = "C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/dataset_for_model/mushroomV2.keras"
+model = tf.keras.models.load_model(path_for_saved_model)
 
 
-image_size = (180, 180)
-batch_size = 128
+def classify_image(imageFile):
+    x = []
 
-model = keras.models.load_model(r'C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\save_at_1.keras')
+    img = Image.open(imageFile)
+    img.load()
+    img = img.resize((224, 224), Image.Resampling.LANCZOS)
 
-img = keras.utils.load_img(r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\kagglecatsanddogs_5340\PetImages\Dog\12495.jpg", target_size=image_size)
-plt.imshow(img)
+    x = image.img_to_array(img)
+    x=np.expand_dims(x,axis=0)
+    x=preprocess_input(x)
+    print(x.shape)
 
-img_array = keras.utils.img_to_array(img)
-img_array = keras.ops.expand_dims(img_array, 0)  # Create batch axis
+    pred = model.predict(x)
+    categoryValue=np.argmax(pred, axis=1)
+    print(categoryValue)
 
-predictions = model.predict(img_array)
-score = float(keras.ops.sigmoid(predictions[0][0]))
-print(f"This image is {100 * (1 - score):.2f}% cat and {100 * score:.2f}% dog.")
-print(score)
+    categoryValue = categoryValue[0]
+    print(categoryValue)
+
+    result = categories[categoryValue]
+
+    return result
+
+imagePath = "C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/Mushroom Classification.v1i.folder/Entoloma/100_DOEuA90u0n4_jpg.rf.d2d49341b664db177b3986a73b4f9832.jpg"
+resultText = classify_image(imagePath)
+print(resultText)
+
+img = cv2.imread(imagePath)
+img = cv2.putText(img, resultText, (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+
+cv2.imshow("img", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
