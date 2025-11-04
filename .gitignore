@@ -9,3 +9,6 @@ save_at_1.keras
 
 #Ignore dataset
 Mushroom Classification.v1i.folder/
+
+#Ignore virtual env (laptop)
+.venv/
