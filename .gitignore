@@ -12,3 +12,10 @@ Mushroom Classification.v1i.folder/
 
 #Ignore virtual env (laptop)
 .venv/
+
+#Ignore the readmes
+*.txt
+*.toml
+
+#Ignore cache
+Code/Mycode/_pycache_/

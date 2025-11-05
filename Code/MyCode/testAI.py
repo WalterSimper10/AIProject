@@ -1,3 +1,7 @@
+#Code for testing the AI
+#Takes image, resizes and preprocesses them before passing them to AI
+#Converts image to usuable numPy array for AI, then pulls out AI predictions and prints result to screen
+
 import os
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
@@ -14,37 +18,46 @@ categories.sort()
 path_for_saved_model = "C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/dataset_for_model/mushroomV2.keras"
 model = tf.keras.models.load_model(path_for_saved_model)
 
-
+#Function to classify the image
 def classify_image(imageFile):
     x = []
 
+    #Load the image and resize it to input to mobileNetv2
     img = Image.open(imageFile)
     img.load()
     img = img.resize((224, 224), Image.Resampling.LANCZOS)
 
+    #Convert image to numPy array
     x = image.img_to_array(img)
-    x=np.expand_dims(x,axis=0)
-    x=preprocess_input(x)
-    print(x.shape)
 
+    #Add a batch dimension (i.e there is ONE image in this batch)
+    x=np.expand_dims(x,axis=0)
+
+    #Preprocesses the shape of the image for the AI
+    x=preprocess_input(x)
+
+    #Pass image through the model and predict
+    #Take out highest value and convert to 1
     pred = model.predict(x)
     categoryValue=np.argmax(pred, axis=1)
-    print(categoryValue)
 
+    #Pulls the value 1 from the array
     categoryValue = categoryValue[0]
-    print(categoryValue)
 
+    #Returns corresponding index for this 1 value as class name
     result = categories[categoryValue]
-
     return result
 
-imagePath = "C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/Mushroom Classification.v1i.folder/Entoloma/100_DOEuA90u0n4_jpg.rf.d2d49341b664db177b3986a73b4f9832.jpg"
+#Run function with desired image
+imagePath = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\Mushroom Classification.v1i.folder\Amanita\020_xmeDaX5osJA_jpg.rf.346b728fa3f9cd375ff80e3b677303bd.jpg"
 resultText = classify_image(imagePath)
 print(resultText)
 
+#Create GUI using cv2, display image and text
 img = cv2.imread(imagePath)
 img = cv2.putText(img, resultText, (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
 
+#Logic for GUI window, ensure 'open-cv python' is installed to run this
 cv2.imshow("img", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
