@@ -3,6 +3,8 @@ kagglecatsanddogs_5340/
 
 #Ignore files that arent code
 MyCode.egg-info/
+checkgpu.py
+oldXceptionBinaryClassifier.txt
 
 #Ignore AI model (train your own!!)
 save_at_1.keras
