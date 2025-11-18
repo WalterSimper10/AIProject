@@ -3,8 +3,8 @@
 #Converts image to usuable numPy array for AI, then pulls out AI predictions and prints result to screen
 
 import os
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
+from tensorflow.keras.preprocessing import image # type: ignore
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input # type: ignore
 from PIL import Image
 import numpy as np
 import tensorflow as tf
@@ -49,7 +49,7 @@ def classify_image(imageFile):
     return result
 
 #Run function with desired image
-imagePath = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\Mushroom Classification.v1i.folder\Amanita\020_xmeDaX5osJA_jpg.rf.346b728fa3f9cd375ff80e3b677303bd.jpg"
+imagePath = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\Mushroom Classification.v1i.folder\Hygrocybe\015_DthsqGQxQHY_jpg.rf.7fa20cc0544ff3e63542060e88811027.jpg"
 resultText = classify_image(imagePath)
 print(resultText)
 
