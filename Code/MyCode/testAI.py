@@ -11,11 +11,11 @@ import tensorflow as tf
 import cv2
 
 #List of classes
-categories = os.listdir("C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/dataset_for_model/train")
+categories = os.listdir(r"/home/killsub-earner-09/datasets/mushroom/train")
 categories.sort()
 
 #Load the model
-path_for_saved_model = "C:/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/dataset_for_model/mushroomV2.keras"
+path_for_saved_model = r"/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/models/finalmodel.keras"
 model = tf.keras.models.load_model(path_for_saved_model)
 
 #Function to classify the image
@@ -49,7 +49,7 @@ def classify_image(imageFile):
     return result
 
 #Run function with desired image
-imagePath = r"C:\Users\SkillsHub-Learner-09\.vscode\VSCODE Projects\AI\AIProject\Mushroom Classification.v1i.folder\Mushroom Classification.v1i.folder\Hygrocybe\015_DthsqGQxQHY_jpg.rf.7fa20cc0544ff3e63542060e88811027.jpg"
+imagePath = r"/mnt/c/Users/SkillsHub-Learner-09/Downloads/IMG_1221.JPG"
 resultText = classify_image(imagePath)
 print(resultText)
 
