@@ -1,6 +1,5 @@
 import tensorflow as tf
 import os 
-# Print TensorFlow version
 
 tf.test.is_gpu_available()
 train_path = r"/home/killsub-earner-09/datasets/mushroom/train"

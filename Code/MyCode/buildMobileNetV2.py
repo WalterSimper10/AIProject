@@ -86,11 +86,10 @@ model.compile(loss="sparse_categorical_crossentropy", optimizer=optimizer, metri
 
 # Callbacks
 #End the training early if overfitting is detected. Detected if val loss is increasing and val accuracy is increasing (i.e. ai is memorizing dataset and noise)
-early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+early_stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
-lr_schedule = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3)
+lr_schedule = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5)
 
-cllbks = keras.callbacks.ModelCheckpoint("/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/models/save_at_{epoch}.keras")
 #train
 # Phase 1: freeze all layers, train only the head
 for layer in baseModel.layers:
@@ -103,20 +102,20 @@ model.compile(optimizer=Adam(learning_rate=1e-3),
 model.fit(train_ds,
           validation_data=valid_ds,
           epochs=25,
-          callbacks=[cllbks, early_stop, lr_schedule])
+          callbacks=[early_stop, lr_schedule])
 
 # Phase 2: unfreeze last 10–15 layers, retrain with low LR
 for layer in baseModel.layers[-25:]:
     layer.trainable = True
 
-model.compile(optimizer=Adam(learning_rate=1e-5),
+model.compile(optimizer=Adam(learning_rate=1e-3),
               loss="sparse_categorical_crossentropy",
               metrics=["accuracy"])
 
 model.fit(train_ds,
           validation_data=valid_ds,
           epochs=75,
-          callbacks=[cllbks, early_stop, lr_schedule])
+          callbacks=[early_stop, lr_schedule])
 
 
 path_for_saved_model = "/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/models/finalmodel.keras"
