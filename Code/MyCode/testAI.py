@@ -19,7 +19,7 @@ path_for_saved_model = r"/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projec
 model = tf.keras.models.load_model(path_for_saved_model)
 
 #Function to classify the image
-def classify_image(imageFile):
+def classify_image(imageFile, top_k=5):
     x = []
 
     #Load the image and resize it to input to mobileNetv2
@@ -38,26 +38,34 @@ def classify_image(imageFile):
 
     #Pass image through the model and predict
     #Take out highest value and convert to 1
-    pred = model.predict(x)
-    categoryValue=np.argmax(pred, axis=1)
+    pred = model.predict(x)[0]
 
-    #Pulls the value 1 from the array
-    categoryValue = categoryValue[0]
+    # Get top-k indices sorted by confidence
+    top_indices = pred.argsort()[-top_k:][::-1]
 
-    #Returns corresponding index for this 1 value as class name
-    result = categories[categoryValue]
-    return result
+    # Map indices to class names and confidence
+    results = [(categories[i], float(pred[i])) for i in top_indices]
+
+    return results
+
 
 #Run function with desired image
-imagePath = r"/mnt/c/Users/SkillsHub-Learner-09/Downloads/IMG_1221.JPG"
-resultText = classify_image(imagePath)
-print(resultText)
+imagePath = r"/mnt/c/Users/SkillsHub-Learner-09/Downloads/IMG_823.JPG"
+top_predictions = classify_image(imagePath, top_k=5)
 
-#Create GUI using cv2, display image and text
+# Print results
+print("Top 5 predictions:")
+for cls, prob in top_predictions:
+    print(f"{cls}: {prob*100:.2f}%")
+
+#Create Cv2 GUI
 img = cv2.imread(imagePath)
-img = cv2.putText(img, resultText, (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+y0, dy = 50, 30
+for i, (cls, prob) in enumerate(top_predictions):
+    text = f"{cls}: {prob*100:.1f}%"
+    y = y0 + i*dy
+    img = cv2.putText(img, text, (50, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,0), 2)
 
-#Logic for GUI window, ensure 'open-cv python' is installed to run this
-cv2.imshow("img", img)
+cv2.imshow("Predictions", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
