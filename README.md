@@ -14,3 +14,6 @@ The 'oldXceptionBinaryClassifier' is a text file that contains a simple binary c
 
 Use the 'TestAI.py' to test your AI
 Note: You will need to install the 'open-cv python' dependency to utilize the GUI display
+
+Only do the previous if you need to train your own model, the final weights are provided.
+Change the weights file to a '.keras' file, and test it in the testAI.py file 
