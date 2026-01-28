@@ -11,8 +11,9 @@ import tensorflow as tf
 import cv2
 
 #List of classes
-categories = os.listdir(r"/home/killsub-earner-09/datasets/mushroom/train")
+categories = os.listdir(r"C:\Users\SkillsHub-Learner-09\Downloads\Mushroom classification\train")
 categories.sort()
+print(categories)
 
 #Load the model
 path_for_saved_model = r"/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/models/finalmodel.keras"
@@ -50,7 +51,7 @@ def classify_image(imageFile, top_k=5):
 
 
 #Run function with desired image
-imagePath = r"/mnt/c/Users/SkillsHub-Learner-09/Downloads/IMG_823.JPG"
+imagePath = r"/mnt/c/Users/SkillsHub-Learner-09/.vscode/VSCODE Projects/AI/AIProject/Mushroom Classification.v1i.folder/Mushroom Classification.v1i.folder/Amanita/011_DoZoYI2vj20_jpg.rf.9b4881c62cbeeccf613cbd3b25cec276.jpg"
 top_predictions = classify_image(imagePath, top_k=5)
 
 # Print results
